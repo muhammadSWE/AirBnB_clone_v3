@@ -1,6 +1,9 @@
+#!/usr/bin/python3
+"""Blueprint for the API."""
 from api.v1.views import *
 from flask import jsonify
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status():
+    """Return a JSON response indicating the status of the API."""
     return jsonify({"status": "OK"})

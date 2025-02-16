@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+"""Flask app for the API."""
 from api.v1.views import app_views
 from flask import Flask
 from models import storage
@@ -8,6 +10,7 @@ app.register_blueprint(app_views)
 
 @app.teardown_appcontext
 def teardown_db(exception):
+    """Call storage.close() on teardown of the Flask app context"""
     storage.close()
 
 if __name__ == "__main__":
