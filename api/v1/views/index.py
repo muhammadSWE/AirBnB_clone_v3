@@ -5,6 +5,7 @@ from flask import jsonify
 from models import storage
 from models.engine import classes
 
+
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status():
     """Return a JSON response indicating the status of the API."""
