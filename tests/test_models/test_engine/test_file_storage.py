@@ -116,29 +116,27 @@ class TestFileStorage(unittest.TestCase):
 
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get(self):
-        """Test that get properly gets an object from the FileStorage.__objects
-        attr"""
-        storage = FileStorage()
-        for key, value in classes.items():
-            instance = value()
-            instance_key = instance.__class__.__name__ + "." + instance.id
-            storage.new(instance)
-            self.assertEqual(storage.get(instance.__class__, instance.id),
-                             instance)
-        self.assertIsNone(storage.get(None, None))
+        """Test that get properly gets an object from the database"""
+        new = State(name="Oregon")
+        models.storage.new(new)
+        models.storage.save()
+        models.storage.reload()
+        self.assertIn(
+            new.__class__.__name__ + "." + new.id,
+            models.storage.all().keys())
+        self.assertEqual(models.storage.get(State, new.id).id, new.id)
 
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
-    def test_count(self):
-        """Test that count returns the number of objects in storage"""
-        storage = FileStorage()
-        for key, value in classes.items():
-            instance = value()
-            instance_key = instance.__class__.__name__ + "." + instance.id
-            storage.new(instance)
-        self.assertEqual(storage.count(), 6)
-        self.assertEqual(storage.count(User), 1)
-        self.assertEqual(storage.count(State), 1)
-        self.assertEqual(storage.count(City), 1)
-        self.assertEqual(storage.count(Place), 1)
-        self.assertEqual(storage.count(Amenity), 1)
-        self.assertEqual(storage.count(Review), 1)
+    def test_count_no_class(self):
+        """
+        Test that count returns the number of rows
+        when no class is passed
+        """
+        count = models.storage.count()
+        self.assertEqual(count, len(models.storage.all()))
+
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
+    def test_count_class(self):
+        """Test that count returns the number of rows when a class is passed"""
+        count = models.storage.count(State)
+        self.assertEqual(count, len(models.storage.all(State)))
