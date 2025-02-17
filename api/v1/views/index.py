@@ -3,8 +3,12 @@
 from api.v1.views import app_views
 from flask import jsonify
 from models import storage
-from models.engine import classes
-
+from models.amenity import Amenity
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status():
@@ -12,12 +16,20 @@ def status():
     return jsonify({"status": "OK"})
 
 
-@app_views.route('/stats', methods=['GET'], strict_slashes=False)
-def stats():
+@app_views.route('/obj_counts', methods=['GET'], strict_slashes=False)
+def obj_counts():
     """Return a JSON response indicating the status of the API."""
-    object_counts = {}
+    classes = {
+        "amenities": Amenity,
+        "cities": City,
+        "places": Place,
+        "reviews": Review,
+        "states": State,
+        "users": User
+    }
 
-    for class_name, class_type in classes.items():
-        object_counts[class_name] = storage.count(class_type)
+    obj_counts = {}
+    for key, value in classes.items():
+        obj_counts[key] = storage.count(value)
 
-    return jsonify(object_counts)
+    return jsonify(obj_counts)
